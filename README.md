@@ -355,129 +355,86 @@ public class ImageMenuItemActionListener implements ActionListener {
 
 ```java
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
+import java.util.concurrent.*;
 
-public class SimpleEditorWithNetwork {
-    private static final int PORT = 8080;
-    private static final String FILE_PATH = "path/to/save/file.txt";
+public class JavaSimpleEditorServer {
+    private static final int PORT = 8808;
+    private static final String SAVE_DIR = "save";
 
     public static void main(String[] args) {
-        SimpleEditor editor = new SimpleEditor();
-        editor.start();
-        NetworkThread networkThread = new NetworkThread(editor);
-        networkThread.start();
+        ExecutorService executor = Executors.newFixedThreadPool(10);
 
-        // Wait for the editor to finish
-        while (editor.isRunning()) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+            System.out.println("Server is listening on port " + PORT);
+
+            while (true) {
+                // Accept incoming client connections
+                Socket socket = serverSocket.accept();
+                executor.submit(new ClientHandler(socket));
             }
-        }
-
-        // Stop the network thread
-        networkThread.stopThread();
-    }
-
-    // Editor class for simplicity, you can replace it with your own implementation
-    static class SimpleEditor {
-        private boolean running = false;
-
-        public void start() {
-            running = true;
-        }
-
-        public void stop() {
-            running = false;
-        }
-
-        public boolean isRunning() {
-            return running;
-        }
-
-        public String getText() {
-            // Return the current text in the editor
-            return "Sample text";
-        }
-
-        public void setText(String text) {
-            // Set the text in the editor
+        } catch (IOException ex) {
+            System.out.println("Server exception: " + ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            // Shutdown the executor service
+            executor.shutdown();
         }
     }
 
-    // Network thread to handle communication with the server
-    static class NetworkThread extends Thread {
-        private SimpleEditor editor;
-        private boolean running = true;
+    public static String getSaveDir() {
+        return SAVE_DIR;
+    }
+}
 
-        public NetworkThread(SimpleEditor editor) {
-            this.editor = editor;
-        }
+class ClientHandler implements Runnable {
+    private Socket socket;
 
-        public void stopThread() {
-            running = false;
-        }
+    public ClientHandler(Socket socket) {
+        this.socket = socket;
+    }
 
-        @Override
-        public void run() {
-            try {
-                ServerSocket serverSocket = new ServerSocket(PORT);
+    public void run() {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
 
-                while (running) {
-                    Socket clientSocket = serverSocket.accept();
-                    handleClient(clientSocket);
+            // Read the file name from the client
+            String fileName = in.readLine();
+            StringBuilder fileContent = new StringBuilder();
+            String line;
+
+            // Read file content line by line until "EOF" is received
+            while ((line = in.readLine()) != null) {
+                if ("EOF".equals(line)) { // Check for end of file marker
+                    break;
                 }
-
-                serverSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                fileContent.append(line).append(System.lineSeparator());
             }
+
+            // Save the received file content to a file
+            saveToFile(fileName, fileContent.toString());
+            // Send confirmation message to client
+            out.println("File saved successfully");
+
+        } catch (IOException ex) {
+            System.out.println("Server exception: " + ex.getMessage());
+            ex.printStackTrace();
         }
+    }
 
-        private void handleClient(Socket clientSocket) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()))) {
-
-                String request = reader.readLine();
-                if (request.equals("SAVE")) {
-                    String text = editor.getText();
-                    saveToFile(text);
-                    writer.write("OK\n");
-                    writer.flush();
-                } else {
-                    String text = loadFromFile();
-                    writer.write(text + "\n");
-                    writer.flush();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+    private void saveToFile(String fileName, String content) {
+        try {
+            File dir = new File(JavaSimpleEditorServer.getSaveDir());
+            if (!dir.exists()) {
+                dir.mkdirs();
             }
-        }
-
-        private void saveToFile(String text) {
-            try (Writer writer = new FileWriter(FILE_PATH)) {
-                writer.write(text);
-            } catch (IOException e) {
-                e.printStackTrace();
+            File file = new File(dir, fileName);
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                writer.write(content);
             }
-        }
-
-        private String loadFromFile() {
-            try (Reader reader = new FileReader(FILE_PATH);
-                 BufferedReader bufferedReader = new BufferedReader(reader)) {
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    sb.append(line);
-                    sb.append("\n");
-                }
-                return sb.toString();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
+        } catch (IOException ex) {
+            System.out.println("File saving exception: " + ex.getMessage());
+            ex.printStackTrace();
         }
     }
 }
