@@ -4,6 +4,7 @@ import java.awt.event.*;
 import java.io.*;
 import javax.swing.text.*;
 import javax.swing.text.rtf.RTFEditorKit;
+import java.net.Socket;
 
 public class JavaSimpleEditor extends JFrame {
 
@@ -115,6 +116,44 @@ public class JavaSimpleEditor extends JFrame {
 
         // Initialize the RTF editor kit
         rtfEditorKit = new RTFEditorKit();
+
+        // Create Save button
+        JButton saveButton = new JButton("Save to Server");
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new Thread(new SaveToServerTask(textPane.getText())).start();
+            }
+        });
+        getContentPane().add(saveButton, BorderLayout.NORTH);
+    }
+
+    private class SaveToServerTask implements Runnable {
+        private String content;
+
+        public SaveToServerTask(String content) {
+            this.content = content;
+        }
+
+        @Override
+        public void run() {
+            try (Socket socket = new Socket("localhost", 8808);
+                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+
+                String fileName = JOptionPane.showInputDialog("Enter file name:");
+                if (fileName != null && !fileName.trim().isEmpty()) {
+                    out.println(fileName);
+                    out.println(content);
+                    out.println("EOF");
+                    String response = in.readLine();
+                    JOptionPane.showMessageDialog(null, response);
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error saving to server");
+            }
+        }
     }
 
     private class NewMenuItemActionListener implements ActionListener {
