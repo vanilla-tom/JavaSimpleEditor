@@ -5,7 +5,7 @@ import java.io.*;
 import javax.swing.text.*;
 import javax.swing.text.rtf.RTFEditorKit;
 
-public class SimpleEditor extends JFrame {
+public class JavaSimpleEditor extends JFrame {
 
     private JTextPane textPane;
     private JFileChooser fileChooser;
@@ -13,7 +13,7 @@ public class SimpleEditor extends JFrame {
     private JLabel statusLabel;
     private JComboBox<String> sizeComboBox;
 
-    public SimpleEditor() {
+    public JavaSimpleEditor() {
         initComponents();
     }
 
@@ -126,7 +126,7 @@ public class SimpleEditor extends JFrame {
 
     private class OpenMenuItemActionListener implements ActionListener {
         public void actionPerformed(ActionEvent evt) {
-            int returnVal = fileChooser.showOpenDialog(SimpleEditor.this);
+            int returnVal = fileChooser.showOpenDialog(JavaSimpleEditor.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
                 try {
@@ -144,7 +144,7 @@ public class SimpleEditor extends JFrame {
 
     private class SaveMenuItemActionListener implements ActionListener {
         public void actionPerformed(ActionEvent evt) {
-            int returnVal = fileChooser.showSaveDialog(SimpleEditor.this);
+            int returnVal = fileChooser.showSaveDialog(JavaSimpleEditor.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
                 try {
@@ -162,7 +162,7 @@ public class SimpleEditor extends JFrame {
 
     private class SaveAsMenuItemActionListener implements ActionListener {
         public void actionPerformed(ActionEvent evt) {
-            int returnVal = fileChooser.showSaveDialog(SimpleEditor.this);
+            int returnVal = fileChooser.showSaveDialog(JavaSimpleEditor.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
                 try {
@@ -329,7 +329,7 @@ public class SimpleEditor extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                SimpleEditor editor = new SimpleEditor();
+                JavaSimpleEditor editor = new JavaSimpleEditor();
                 editor.setSize(800, 600);
                 editor.setVisible(true);
             }
