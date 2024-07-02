@@ -41,11 +41,7 @@ public class JavaSimpleEditor extends JFrame {
         // Create the file menu items
         JMenuItem menuItemNew = new JMenuItem("New");
         menuItemNew.addActionListener(new ActionListener() {
-<<<<<<< HEAD
             public void actionPerformed(ActionEvent e) {
-=======
-            public void actionPerformed(ActionEvent e){
->>>>>>> 24926fabae9a64f6b9044a0d710a675f4bfc9a12
                 textPane.setText("");
                 status.setText("New document created");
             }
@@ -53,28 +49,17 @@ public class JavaSimpleEditor extends JFrame {
         fileMenu.add(menuItemNew);
 
         JMenuItem menuItemOpen = new JMenuItem("Open");
-<<<<<<< HEAD
         menuItemOpen.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int returnVal = fileChooser.showOpenDialog(JavaSimpleEditor.this);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
-=======
-        menuItemOpen.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                int returnVal = fileChooser.showOpenDialog(JavaSimpleEditor.this);
-                if(returnVal == JFileChooser.APPROVE_OPTION){
->>>>>>> 24926fabae9a64f6b9044a0d710a675f4bfc9a12
                     File file = fileChooser.getSelectedFile();
                     try {
                         FileInputStream fis = new FileInputStream(file);
                         rtfEditor.read(fis, textPane.getDocument(), 0);
                         fis.close();
                         status.setText("File opened: " + file.getName());
-<<<<<<< HEAD
                     } catch (IOException | BadLocationException ex) {
-=======
-                    } catch (IOException | BadLocationException ex){
->>>>>>> 24926fabae9a64f6b9044a0d710a675f4bfc9a12
                         ex.printStackTrace();
                         status.setText("Open file failed");
                     }
@@ -84,11 +69,7 @@ public class JavaSimpleEditor extends JFrame {
         fileMenu.add(menuItemOpen);
 
         JMenuItem menuItemSave = new JMenuItem("Save");
-<<<<<<< HEAD
         menuItemSave.addActionListener(new ActionListener() {
-=======
-        menuItemSave.addActionListener(new ActionListener(){
->>>>>>> 24926fabae9a64f6b9044a0d710a675f4bfc9a12
             public void actionPerformed(ActionEvent e) {
                 int returnVal = fileChooser.showSaveDialog(JavaSimpleEditor.this);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -133,11 +114,7 @@ public class JavaSimpleEditor extends JFrame {
 
         // Create the edit menu items
         JMenuItem menuItemFind = new JMenuItem("Find");
-<<<<<<< HEAD
         menuItemFind.addActionListener(new ActionListener() {
-=======
-        menuItemFind.addActionListener(new ActionListener(){
->>>>>>> 24926fabae9a64f6b9044a0d710a675f4bfc9a12
             @Override
             public void actionPerformed(ActionEvent e) {
                 String searchText = JOptionPane.showInputDialog(textPane, "Enter text to find:");
@@ -158,11 +135,7 @@ public class JavaSimpleEditor extends JFrame {
         editMenu.add(menuItemFind);
 
         JMenuItem menuItemReplace = new JMenuItem("Replace");
-<<<<<<< HEAD
         menuItemReplace.addActionListener(new ActionListener() {
-=======
-        menuItemReplace.addActionListener(new ActionListener(){
->>>>>>> 24926fabae9a64f6b9044a0d710a675f4bfc9a12
             @Override
             public void actionPerformed(ActionEvent e) {
                 String searchText = JOptionPane.showInputDialog(textPane, "Enter text to find:");
@@ -187,11 +160,7 @@ public class JavaSimpleEditor extends JFrame {
 
         // Create the format menu items
         JMenuItem menuItemFont = new JMenuItem("Font");
-<<<<<<< HEAD
         menuItemFont.addActionListener(new ActionListener() {
-=======
-        menuItemFont.addActionListener(new ActionListener(){
->>>>>>> 24926fabae9a64f6b9044a0d710a675f4bfc9a12
             @Override
             public void actionPerformed(ActionEvent e) {
                 String[] fontNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
@@ -222,11 +191,7 @@ public class JavaSimpleEditor extends JFrame {
         formatMenu.add(menuItemColor);
 
         List sizeList = new List();
-<<<<<<< HEAD
         for (int i = 12; i <= 60; i += 4) {
-=======
-        for(int i = 12; i <= 60; i += 4){
->>>>>>> 24926fabae9a64f6b9044a0d710a675f4bfc9a12
             sizeList.add(Integer.toString(i));
         }
         JMenu menuItemSize = new JMenu("Size");
@@ -314,7 +279,6 @@ public class JavaSimpleEditor extends JFrame {
         }
     }
 
-<<<<<<< HEAD
     private class LoadFromServerTask implements Runnable {
         @Override
         public void run() {
@@ -351,8 +315,6 @@ public class JavaSimpleEditor extends JFrame {
         }
     }
 
-=======
->>>>>>> 24926fabae9a64f6b9044a0d710a675f4bfc9a12
     private class ImageActionListener implements ActionListener {
         private JTextPane textPane;
 
@@ -362,10 +324,6 @@ public class JavaSimpleEditor extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-<<<<<<< HEAD
-=======
-            // 打开文件选择对话框并插入选定的图片
->>>>>>> 24926fabae9a64f6b9044a0d710a675f4bfc9a12
             insertImage();
         }
 
