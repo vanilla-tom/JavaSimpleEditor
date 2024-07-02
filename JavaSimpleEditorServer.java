@@ -40,20 +40,32 @@ class ClientHandler implements Runnable {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
 
-            String fileName = in.readLine();
-            StringBuilder fileContent = new StringBuilder();
-            String line;
+            String command = in.readLine();
 
-            while ((line = in.readLine()) != null) {
-                if ("EOF".equals(line)) { // 检查结束标志
-                    break;
+            if ("SAVE".equals(command)) {
+                String fileName = in.readLine();
+                StringBuilder fileContent = new StringBuilder();
+                String line;
+
+                while ((line = in.readLine()) != null) {
+                    if ("EOF".equals(line)) { // 检查结束标志
+                        break;
+                    }
+                    fileContent.append(line).append(System.lineSeparator());
                 }
-                fileContent.append(line).append(System.lineSeparator());
+
+                saveToFile(fileName, fileContent.toString());
+                out.println("File saved successfully");
+            } else if ("READ".equals(command)) {
+                String fileName = in.readLine();
+                String fileContent = readFromFile(fileName);
+                if (fileContent != null) {
+                    out.println(fileContent);
+                    out.println("EOF");
+                } else {
+                    out.println("File not found");
+                }
             }
-
-            saveToFile(fileName, fileContent.toString());
-            out.println("File saved successfully");
-
         } catch (IOException ex) {
             System.out.println("Server exception: " + ex.getMessage());
             ex.printStackTrace();
@@ -73,6 +85,26 @@ class ClientHandler implements Runnable {
         } catch (IOException ex) {
             System.out.println("File saving exception: " + ex.getMessage());
             ex.printStackTrace();
+        }
+    }
+
+    private String readFromFile(String fileName) {
+        File file = new File(JavaSimpleEditorServer.getSaveDir(), fileName);
+        if (!file.exists()) {
+            return null;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            StringBuilder content = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append(System.lineSeparator());
+            }
+            return content.toString();
+        } catch (IOException ex) {
+            System.out.println("File reading exception: " + ex.getMessage());
+            ex.printStackTrace();
+            return null;
         }
     }
 }
